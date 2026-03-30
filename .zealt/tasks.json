@@ -22,7 +22,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-32-00",
@@ -44,7 +45,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-34-54",
@@ -66,7 +68,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_workflow"
+        ]
       },
       {
         "job_name": "2026-03-30__13-21-06",
@@ -88,7 +93,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-19-20",
@@ -110,7 +116,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-17-05",
@@ -132,7 +139,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       }
     ]
   },
@@ -159,7 +167,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-32-00",
@@ -181,7 +192,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-34-54",
@@ -203,7 +217,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-21-06",
@@ -225,7 +242,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-19-20",
@@ -247,7 +267,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-17-05",
@@ -269,7 +292,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       }
     ]
   },
@@ -296,7 +320,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       },
       {
         "job_name": "2026-03-30__13-34-54",
@@ -318,7 +345,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       },
       {
         "job_name": "2026-03-30__13-21-06",
@@ -340,7 +370,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       },
       {
         "job_name": "2026-03-30__13-19-20",
@@ -362,7 +395,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       },
       {
         "job_name": "2026-03-30__13-17-05",
@@ -384,7 +420,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       }
     ]
   }

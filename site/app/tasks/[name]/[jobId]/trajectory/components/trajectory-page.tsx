@@ -11,7 +11,7 @@ import { HttpError } from "@/lib/http-error";
 
 type TrajectoryPageProps = {
   trajectoryUrl: string;
-  browserVerificationUrl: string | null;
+  browserVerificationUrls: { name: string; url: string }[];
   fallbackUrl: string;
   stderrLogUrl: string | null;
   verifierLogUrl: string | null;
@@ -34,7 +34,7 @@ async function fetchLogText(url: string): Promise<string> {
 
 export function TrajectoryPage({
   trajectoryUrl,
-  browserVerificationUrl,
+  browserVerificationUrls,
   fallbackUrl,
   stderrLogUrl,
   verifierLogUrl,
@@ -42,8 +42,11 @@ export function TrajectoryPage({
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [iframeLoading, setIframeLoading] = useState(true);
-  const [browserIframeLoading, setBrowserIframeLoading] = useState(true);
+  const [browserIframeLoading, setBrowserIframeLoading] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState("trajectory");
+  const [activeBrowserVerificationTab, setActiveBrowserVerificationTab] = useState(
+    browserVerificationUrls[0]?.name || "",
+  );
 
   const iframeTheme = mounted && resolvedTheme === "light" ? "light" : "dark";
 
@@ -53,15 +56,16 @@ export function TrajectoryPage({
     return url.toString();
   }, [trajectoryUrl, iframeTheme]);
 
-  const browserVerificationIframeUrl = useMemo(() => {
-    if (!browserVerificationUrl) {
+  const activeBrowserVerificationUrl = useMemo(() => {
+    const testCase = browserVerificationUrls.find((tc) => tc.name === activeBrowserVerificationTab);
+    if (!testCase) {
       return null;
     }
 
-    const url = new URL(browserVerificationUrl);
+    const url = new URL(testCase.url);
     url.searchParams.set("theme", iframeTheme);
     return url.toString();
-  }, [browserVerificationUrl, iframeTheme]);
+  }, [browserVerificationUrls, activeBrowserVerificationTab, iframeTheme]);
 
   useEffect(() => {
     setMounted(true);
@@ -76,12 +80,12 @@ export function TrajectoryPage({
   }, [iframeUrl, mounted]);
 
   useEffect(() => {
-    if (!mounted || !browserVerificationIframeUrl) {
+    if (!mounted || !activeBrowserVerificationUrl) {
       return;
     }
 
-    setBrowserIframeLoading(true);
-  }, [browserVerificationIframeUrl, mounted]);
+    setBrowserIframeLoading((prev) => ({ ...prev, [activeBrowserVerificationTab]: true }));
+  }, [activeBrowserVerificationUrl, activeBrowserVerificationTab, mounted]);
 
   const stderrQuery = useQuery({
     queryKey: ["trajectory-stderr", stderrLogUrl],
@@ -111,8 +115,8 @@ export function TrajectoryPage({
     setIframeLoading(false);
   };
 
-  const handleBrowserIframeLoad = () => {
-    setBrowserIframeLoading(false);
+  const handleBrowserIframeLoad = (testCaseName: string) => {
+    setBrowserIframeLoading((prev) => ({ ...prev, [testCaseName]: false }));
   };
 
   const handleIframeError = () => {
@@ -149,113 +153,140 @@ export function TrajectoryPage({
   return (
     <div className="h-full w-full pb-4 pt-4 sm:pb-6 sm:pt-5">
       <div className="mx-auto h-full w-full max-w-[1400px] px-4 sm:px-7 lg:px-10">
-        <Tabs
-          value={activeTab}
-          onValueChange={setActiveTab}
-          className="flex h-full min-h-0 flex-col gap-0 overflow-hidden rounded-xl border border-border bg-background/70 backdrop-blur-sm shadow-sm"
-        >
-          <div className="border-b border-border bg-background/40 px-3 py-3 sm:px-4">
-            <TabsList className="grid h-11 w-full sm:w-[600px] max-w-full grid-cols-4 items-stretch gap-1 rounded-xl bg-muted/55 p-1">
-              <TabsTrigger
-                value="trajectory"
-                className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Trajectory
-              </TabsTrigger>
-              <TabsTrigger
-                value="log"
-                className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Log
-              </TabsTrigger>
-              <TabsTrigger
-                value="test"
-                className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                Test
-              </TabsTrigger>
-              <TabsTrigger
-                value="browser-verification"
-                className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
-              >
-                <span className="hidden sm:inline whitespace-nowrap">Browser Verification</span>
-                <span className="sm:hidden">Browser</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="trajectory" className="relative min-h-0 flex-1 overflow-hidden px-2" forceMount>
-            <div
-              className={`absolute inset-0 z-10 overflow-auto bg-background/80 transition-opacity duration-420 ease-out delay-220 ${!mounted || iframeLoading ? "opacity-100" : "pointer-events-none opacity-0"}`}
-            >
-              <TrajectorySkeleton />
-            </div>
-            {mounted && (
-              <iframe
-                src={iframeUrl}
-                className={`h-full w-full border-0 transition-opacity duration-260 ease-out ${iframeLoading ? "opacity-0" : "opacity-100"}`}
-                title="Trajectory Details"
-                onLoad={handleIframeLoad}
-                onError={handleIframeError}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent value="log" className="min-h-0 flex-1 overflow-hidden" forceMount>
-            <ScrollArea className="h-full w-full">
-              <div className="px-3 pb-4 pt-2 sm:px-4 sm:pb-5 sm:pt-3">
-                {renderLogContent(
-                  stderrQuery.data,
-                  stderrQuery.isPending || stderrQuery.isFetching,
-                  stderrQuery.isError,
-                  stderrQuery.error,
-                  () => void stderrQuery.refetch(),
-                  "No log available.",
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="test" className="min-h-0 flex-1 overflow-hidden" forceMount>
-            <ScrollArea className="h-full w-full">
-              <div className="px-3 pb-4 pt-2 sm:px-4 sm:pb-5 sm:pt-3">
-                {renderLogContent(
-                  verifierQuery.data,
-                  verifierQuery.isPending || verifierQuery.isFetching,
-                  verifierQuery.isError,
-                  verifierQuery.error,
-                  () => void verifierQuery.refetch(),
-                  "No test log available.",
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-                    <TabsContent value="browser-verification" className="relative min-h-0 flex-1 overflow-hidden px-2" forceMount>
-            {!browserVerificationIframeUrl ? (
-              <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                No browser verification trajectory available.
-              </div>
-            ) : (
-              <>
-                <div
-                  className={`absolute inset-0 z-10 overflow-auto bg-background/80 transition-opacity duration-420 ease-out delay-220 ${!mounted || browserIframeLoading ? "opacity-100" : "pointer-events-none opacity-0"}`}
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="flex h-full min-h-0 flex-col gap-0 overflow-hidden rounded-xl border border-border bg-background/70 backdrop-blur-sm shadow-sm"
+          >
+            <div className="border-b border-border bg-background/40 px-3 py-3 sm:px-4">
+              <TabsList className="grid h-11 w-full sm:w-[600px] max-w-full grid-cols-4 items-stretch gap-1 rounded-xl bg-muted/55 p-1">
+                <TabsTrigger
+                  value="trajectory"
+                  className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
                 >
-                  <TrajectorySkeleton />
+                  Trajectory
+                </TabsTrigger>
+                <TabsTrigger
+                  value="log"
+                  className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                >
+                  Log
+                </TabsTrigger>
+                <TabsTrigger
+                  value="test"
+                  className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                >
+                  Test
+                </TabsTrigger>
+                <TabsTrigger
+                  value="browser-verification"
+                  className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"
+                >
+                  <span className="hidden sm:inline whitespace-nowrap">Browser Verification</span>
+                  <span className="sm:hidden">Browser</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="trajectory" className="relative min-h-0 flex-1 overflow-hidden px-2" forceMount>
+              <div
+                className={`absolute inset-0 z-10 overflow-auto bg-background/80 transition-opacity duration-420 ease-out delay-220 ${!mounted || iframeLoading ? "opacity-100" : "pointer-events-none opacity-0"}`}
+              >
+                <TrajectorySkeleton />
+              </div>
+              {mounted && (
+                <iframe
+                  src={iframeUrl}
+                  className={`h-full w-full border-0 transition-opacity duration-260 ease-out ${iframeLoading ? "opacity-0" : "opacity-100"}`}
+                  title="Trajectory Details"
+                  onLoad={handleIframeLoad}
+                  onError={handleIframeError}
+                />
+              )}
+            </TabsContent>
+
+            <TabsContent value="log" className="min-h-0 flex-1 overflow-hidden" forceMount>
+              <ScrollArea className="h-full w-full">
+                <div className="px-3 pb-4 pt-2 sm:px-4 sm:pb-5 sm:pt-3">
+                  {renderLogContent(
+                    stderrQuery.data,
+                    stderrQuery.isPending || stderrQuery.isFetching,
+                    stderrQuery.isError,
+                    stderrQuery.error,
+                    () => void stderrQuery.refetch(),
+                    "No log available.",
+                  )}
                 </div>
-                {mounted && (
-                  <iframe
-                    src={browserVerificationIframeUrl}
-                    className={`h-full w-full border-0 transition-opacity duration-260 ease-out ${browserIframeLoading ? "opacity-0" : "opacity-100"}`}
-                    title="Browser Verification"
-                    onLoad={handleBrowserIframeLoad}
-                    onError={handleIframeError}
-                  />
-                )}
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="test" className="min-h-0 flex-1 overflow-hidden" forceMount>
+              <ScrollArea className="h-full w-full">
+                <div className="px-3 pb-4 pt-2 sm:px-4 sm:pb-5 sm:pt-3">
+                  {renderLogContent(
+                    verifierQuery.data,
+                    verifierQuery.isPending || verifierQuery.isFetching,
+                    verifierQuery.isError,
+                    verifierQuery.error,
+                    () => void verifierQuery.refetch(),
+                    "No test log available.",
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="browser-verification" className="relative min-h-0 flex-1 overflow-hidden flex flex-col" forceMount>
+              {browserVerificationUrls.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  No browser verification trajectory available.
+                </div>
+              ) : (
+                <>
+                  <div className="bg-background/20 px-3 py-1.5 sm:px-4 mt-3 shrink-0 overflow-x-auto">
+                    <div className="flex gap-1.5 min-w-max">
+                      {browserVerificationUrls.map((testCase) => (
+                        <button
+                          key={testCase.name}
+                          type="button"
+                          onClick={() => setActiveBrowserVerificationTab(testCase.name)}
+                          className={`px-2.5 py-1 text-[11px] sm:text-xs rounded-full transition-colors whitespace-nowrap border ${
+                            activeBrowserVerificationTab === testCase.name
+                              ? "bg-primary/10 text-primary border-primary/20 font-medium"
+                              : "bg-transparent text-muted-foreground border-transparent hover:bg-secondary/50 hover:text-foreground"
+                          }`}
+                        >
+                          {testCase.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="relative min-h-0 flex-1 px-2 border-t border-border/50">
+                    <div
+                      className={`absolute inset-0 z-10 overflow-auto bg-background/80 transition-opacity duration-420 ease-out delay-220 ${
+                        !mounted || browserIframeLoading[activeBrowserVerificationTab]
+                          ? "opacity-100"
+                          : "pointer-events-none opacity-0"
+                      }`}
+                    >
+                      <TrajectorySkeleton />
+                    </div>
+                    {mounted && activeBrowserVerificationUrl && (
+                      <iframe
+                        key={activeBrowserVerificationTab}
+                        src={activeBrowserVerificationUrl}
+                        className={`h-full w-full border-0 transition-opacity duration-260 ease-out ${
+                          browserIframeLoading[activeBrowserVerificationTab] ? "opacity-0" : "opacity-100"
+                        }`}
+                        title={`Browser Verification - ${activeBrowserVerificationTab}`}
+                        onLoad={() => handleBrowserIframeLoad(activeBrowserVerificationTab)}
+                        onError={handleIframeError}
+                      />
+                    )}
+                  </div>
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
       </div>
     </div>
   );

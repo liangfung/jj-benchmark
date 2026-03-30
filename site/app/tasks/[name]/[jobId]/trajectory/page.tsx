@@ -24,6 +24,7 @@ type TrialEntry = {
     verifier?: number | null;
   };
   trajectory_id?: string;
+  browser_verification_cases?: string[];
 };
 
 function formatStartTime(jobName: string): string {
@@ -151,11 +152,11 @@ function buildClipUrl(jobName: string, trialName: string, title: string): string
   return url.toString();
 }
 
-function buildBrowserVerificationUrl(jobName: string, trialName: string): string {
+function buildBrowserVerificationUrl(jobName: string, trialName: string, testCase: string): string {
   const ownerRepo = getGithubOwnerRepo();
   const branch = getGithubBranchName();
   const url = new URL(
-    `/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/test_browser_verification/trajectory.jsonl`,
+    `/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/${testCase}/trajectory.jsonl`,
     getServerBaseUrl(),
   );
   return url.toString();
@@ -276,12 +277,12 @@ export default async function TrajectoryRoutePage({
   const trajectoryUrl = trialEntry
     ? buildClipUrl(trialEntry.job_name, trialEntry.trial_name, resolvedParams.name)
     : null;
-  const browserVerificationUrl = trialEntry
-    ? buildBrowserVerificationUrl(
-        trialEntry.job_name,
-        trialEntry.trial_name,
-      )
-    : null;
+  const browserVerificationUrls = trialEntry?.browser_verification_cases
+    ? trialEntry.browser_verification_cases.map((testCase) => ({
+        name: testCase,
+        url: buildBrowserVerificationUrl(trialEntry.job_name, trialEntry.trial_name, testCase),
+      }))
+    : [];
 
   // Redirect
   if (!trajectoryUrl || !trialEntry) {
@@ -331,7 +332,7 @@ export default async function TrajectoryRoutePage({
       <div className="min-h-0 flex-1">
         <TrajectoryPage
           trajectoryUrl={trajectoryUrl}
-          browserVerificationUrl={browserVerificationUrl}
+          browserVerificationUrls={browserVerificationUrls}
           fallbackUrl={fallbackUrl ?? ""}
           stderrLogUrl={stderrLogUrl}
           verifierLogUrl={verifierLogUrl}
