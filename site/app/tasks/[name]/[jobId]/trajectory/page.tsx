@@ -146,8 +146,18 @@ function getGithubOwnerRepo(): string {
 function buildClipUrl(jobName: string, trialName: string, title: string): string {
   const ownerRepo = getGithubOwnerRepo();
   const branch = getGithubBranchName();
-  const url = new URL(`/f/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/agent/pochi/trajectory.jsonl`, getServerBaseUrl());
+  const url = new URL(`/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/agent/pochi/trajectory.jsonl`, getServerBaseUrl());
   url.searchParams.set("title", title);
+  return url.toString();
+}
+
+function buildBrowserVerificationUrl(jobName: string, trialName: string): string {
+  const ownerRepo = getGithubOwnerRepo();
+  const branch = getGithubBranchName();
+  const url = new URL(
+    `/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/test_browser_verification/trajectory.jsonl`,
+    getServerBaseUrl(),
+  );
   return url.toString();
 }
 
@@ -266,10 +276,16 @@ export default async function TrajectoryRoutePage({
   const trajectoryUrl = trialEntry
     ? buildClipUrl(trialEntry.job_name, trialEntry.trial_name, resolvedParams.name)
     : null;
-  
+  const browserVerificationUrl = trialEntry
+    ? buildBrowserVerificationUrl(
+        trialEntry.job_name,
+        trialEntry.trial_name,
+      )
+    : null;
+
   // Redirect
   if (!trajectoryUrl || !trialEntry) {
-    redirect(fallbackUrl ?? '/tasks');
+    redirect(fallbackUrl ?? "/tasks");
   }
 
   const stderrLogUrl = trialEntry
@@ -315,7 +331,8 @@ export default async function TrajectoryRoutePage({
       <div className="min-h-0 flex-1">
         <TrajectoryPage
           trajectoryUrl={trajectoryUrl}
-          fallbackUrl={fallbackUrl ?? ''}
+          browserVerificationUrl={browserVerificationUrl}
+          fallbackUrl={fallbackUrl ?? ""}
           stderrLogUrl={stderrLogUrl}
           verifierLogUrl={verifierLogUrl}
         />
