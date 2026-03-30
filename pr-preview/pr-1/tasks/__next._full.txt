@@ -1,0 +1,215 @@
+1:"$Sreact.fragment"
+2:I[47618,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/ca023ad85cd7aeee.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/2ad5122eae704b1a.js"],"AppQueryProvider"]
+3:I[20416,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/ca023ad85cd7aeee.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/2ad5122eae704b1a.js"],"ThemeProvider"]
+4:I[63155,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/ca023ad85cd7aeee.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/2ad5122eae704b1a.js"],"ThemeToggle"]
+5:I[36064,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+6:I[81497,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+7:I[42654,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/ca023ad85cd7aeee.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/2ad5122eae704b1a.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/e92a719b08ce15ef.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/be08138953094657.js"],"TasksPageClient"]
+f:I[9986,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"default"]
+:HL["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/3ab246b3126732a9.css","style"]
+:HL["/jj-benchmark/pr-preview/pr-1/_next/static/media/83afe278b6a6bb3c-s.p.3a6ba036.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+8:Ta32,# Collaborative Task Manager with Role-Based Access
+
+## Background
+Wasp is a full-stack framework that uses a declarative DSL to define application structure, combined with React and Node.js. This task involves building a multi-user task management system where users can belong to teams, and access is controlled based on membership.
+
+## Requirements
+1.  **Data Model**:
+    *   `User`: Standard auth user.
+    *   `Team`: Has a `name` and a list of `members` (Users).
+    *   `Task`: Has a `description`, `isDone` status, and belongs to a `Team`.
+2.  **Authentication**:
+    *   Use `usernameAndPassword` authentication.
+    *   Customize the signup process to include a `fullName` field on the `User` entity.
+3.  **Operations**:
+    *   **Query** `getMyTeams`: Returns all teams the logged-in user belongs to.
+    *   **Action** `createTeam`: Creates a new team and adds the creator as the first member.
+    *   **Action** `createTask`: Creates a task for a specific team. **Constraint**: Only team members can create tasks for that team.
+    *   **Query** `getTeamTasks`: Returns all tasks for a specific team. **Constraint**: Only team members can view tasks for that team.
+4.  **Frontend**:
+    *   A Dashboard page showing the user's teams.
+    *   A Team Detail page (using dynamic routes `/team/:id`) showing tasks and a form to add new tasks.
+    *   Use Wasp's `useQuery` and `useAction` hooks for data fetching and mutations.
+
+## Implementation Guide
+1.  **Project Setup**:
+    *   Initialize a new Wasp project: `wasp new team_manager -t minimal`.
+    *   Base path: `/home/user/team_manager`.
+2.  **Schema Definition**:
+    *   Define `User`, `Team`, and `Task` in `schema.prisma`.
+    *   Ensure proper relations (Many-to-Many between User and Team, One-to-Many between Team and Task).
+3.  **Auth Configuration**:
+    *   In `main.wasp`, configure `auth` with `userSignupFields` to capture `fullName`.
+    *   Implement `userSignupFields` in `src/auth.ts`.
+4.  **Backend Logic**:
+    *   Implement queries and actions in `src/queries.ts` and `src/actions.ts`.
+    *   Use `context.user` to verify identity and `context.entities` for database access.
+    *   Throw `HttpError(403)` if a user tries to access/modify a team they don't belong to.
+5.  **Frontend Implementation**:
+    *   Create `src/pages/Dashboard.tsx` and `src/pages/TeamPage.tsx`.
+    *   Use `wasp/client/operations` to call your queries and actions.
+
+## Constraints
+- Project path: `/home/user/team_manager`
+- Start command: `wasp start`
+- Port: 3000
+- Database: SQLite (default)
+- Use TypeScript for all implementation files.
+9:Tc20,# Customizing Wasp Signup with Extra Fields
+
+## Background
+Wasp provides a powerful authentication system out of the box. While the default setup handles email/password or social logins, many real-world applications require collecting additional information during registration, such as a user's full name or organization. This task involves extending the Wasp `User` entity and the built-in `SignupForm` to collect and save a `fullName` field.
+
+## Requirements
+- **Database Schema**: Update the `User` entity to include a `fullName` string field.
+- **Backend Logic**: Implement a `userSignupFields` function to process and validate the `fullName` from the signup data.
+- **Frontend UI**: Customize the `SignupForm` component to include a "Full Name" input field with basic validation.
+- **Display**: Show the `fullName` of the logged-in user on the main page.
+
+## Implementation Guide
+
+### 1. Project Setup
+Initialize a new Wasp project in `/home/user/my-auth-app`:
+```bash
+wasp new my-auth-app
+cd my-auth-app
+```
+
+### 2. Update Schema (`main.wasp`)
+Modify the `User` entity to add `fullName`: 
+```wasp
+entity User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+  fullName String  // Add this field
+}
+```
+
+### 3. Configure Auth (`main.wasp`)
+In the `auth` section of your `app` declaration, add the `userSignupFields` import:
+```wasp
+app myAuthApp {
+  wasp: { version: "^0.15.0" },
+  title: "My Auth App",
+  auth: {
+    userEntity: User,
+    methods: { usernameAndPassword: {} },
+    onAuthFailedRedirectTo: "/login",
+    userSignupFields: import { userSignupFields } from "@src/auth/signup.js"
+  }
+}
+```
+
+### 4. Backend Logic (`src/auth/signup.js`)
+Create `src/auth/signup.js` and export `userSignupFields`. Use `defineUserSignupFields` to map the incoming data to your entity fields:
+```javascript
+import { defineUserSignupFields } from 'wasp/server/auth'
+
+export const userSignupFields = defineUserSignupFields({
+  fullName: (data) => {
+    if (!data.fullName) {
+      throw new Error('Full name is required')
+    }
+    return data.fullName
+  },
+})
+```
+
+### 5. Frontend UI (`src/SignupPage.jsx`)
+Customize the `SignupForm` by passing the `additionalFields` prop:
+```javascript
+import { SignupForm } from 'wasp/client/auth'
+
+export const SignupPage = () => {
+  return (
+    <SignupForm
+      additionalFields={[
+        {
+          name: 'fullName',
+          label: 'Full Name',
+          type: 'input',
+          validations: {
+            required: 'Full name is required',
+          },
+        },
+      ]}
+    />
+  )
+}
+```
+Remember to update `main.wasp` to use this custom `SignupPage` component for the `/signup` route.
+
+### 6. Display User Info (`src/MainPage.jsx`)
+Update the `MainPage` to display the user's full name:
+```javascript
+export const MainPage = ({ user }) => {
+  return (
+    <div>
+      <h1>Hello, {user.fullName}!</h1>
+      {/* ... logout button ... */}
+    </div>
+  )
+}
+```
+
+## Constraints
+- Project path: `/home/user/my-auth-app`
+- Start command: `wasp start` (Note: You'll need to run `wasp db migrate-dev` first)
+- Port: 3000a:T8d3,# Wasp Todo List Application
+
+## Background
+Wasp is a declarative DSL for building full-stack web applications using React, Node.js, and Prisma. In this task, you will build a simple, multi-user Todo List application that demonstrates the core features of Wasp: Entities, Operations (Queries & Actions), and Authentication.
+
+## Requirements
+- **Authentication**: Implement username and password authentication.
+- **Data Model**:
+    - `User` entity to store user information.
+    - `Task` entity with `description` (String) and `isDone` (Boolean) fields.
+    - A one-to-many relationship between `User` and `Task`.
+- **Operations**:
+    - `getTasks` Query: Fetch only the tasks belonging to the logged-in user.
+    - `createTask` Action: Create a new task for the logged-in user.
+    - `updateTask` Action: Toggle the `isDone` status of a specific task.
+- **Frontend**:
+    - A login/signup page using Wasp's built-in Auth UI.
+    - A main page (protected) that displays the user's tasks.
+    - A form to add new tasks.
+    - Checkboxes to mark tasks as completed.
+    - A logout button.
+
+## Implementation Guide
+1. **Initialize Project**:
+   - Create a new Wasp project in `/home/user/todo-app` using the minimal template: `wasp new todo-app -t minimal`.
+2. **Define Schema**:
+   - In `schema.prisma`, define the `User` and `Task` models with the appropriate relation.
+3. **Configure App**:
+   - In `main.wasp`, set up the `app` declaration with `auth` (using `usernameAndPassword`).
+   - Define `route` and `page` for `MainPage`, `LoginPage`, and `SignupPage`.
+   - Set `authRequired: true` for the `MainPage`.
+4. **Implement Operations**:
+   - Declare `query getTasks`, `action createTask`, and `action updateTask` in `main.wasp`.
+   - Implement the logic in `src/queries.ts` and `src/actions.ts`, ensuring you use `context.user` for security.
+5. **Build UI**:
+   - Use Wasp's `LoginForm` and `SignupForm` for authentication pages.
+   - Use `useQuery` and `useAction` hooks in `src/MainPage.tsx` to interact with the backend.
+6. **Database Migration**:
+   - Run `wasp db migrate-dev` to apply your schema changes.
+
+## Constraints
+- **Project Path**: `/home/user/todo-app`
+- **Start Command**: `wasp start`
+- **Port**: 3000
+- **Database**: SQLite (default)
+0:{"P":null,"b":"AMDdtMNhRxHlkKwjSLIdO","c":["","tasks",""],"q":"","i":false,"f":[[["",{"children":["tasks",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/jj-benchmark/pr-preview/pr-1/_next/static/chunks/3ab246b3126732a9.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/jj-benchmark/pr-preview/pr-1/_next/static/chunks/ca023ad85cd7aeee.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/jj-benchmark/pr-preview/pr-1/_next/static/chunks/2ad5122eae704b1a.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","suppressHydrationWarning":true,"children":["$","body",null,{"className":"inter_5972bc34-module__OU16Qa__className antialiased","children":["$","$L2",null,{"children":["$","$L3",null,{"defaultTheme":"dark","children":[["$","div",null,{"className":"fixed right-4 top-6 z-50 sm:top-8","children":["$","$L4",null,{}]}],["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]]}]}]}]}]]}],{"children":[["$","$1","c",{"children":[null,["$","$L5",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L6",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["$","$1","c",{"children":[["$","div",null,{"className":"min-h-screen bg-background text-foreground font-sans selection:bg-primary/20","children":[["$","div",null,{"className":"fixed inset-0 -z-10 h-full w-full bg-background bg-[radial-gradient(#2a2a2a_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 dark:opacity-40"}],["$","$L7",null,{"tasksData":[{"taskName":"collaborative_team_tasks","instruction":"$8","trials":[{"job_name":"2026-03-30__13-19-20","trial_name":"collaborative_team_tasks__NJ5agBo","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":572.162,"latency_breakdown":{"env_setup":2.844,"agent_setup":9.304,"agent_exec":386.956,"verifier":168.599},"taskName":"collaborative_team_tasks","jobId":"NJ5agBo","exec_duration":386.956},{"job_name":"2026-03-30__13-17-05","trial_name":"collaborative_team_tasks__sLKRLQv","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":true,"latency_sec":779.237,"latency_breakdown":{"env_setup":2.534,"agent_setup":9.306,"agent_exec":600.002,"verifier":156.365},"taskName":"collaborative_team_tasks","jobId":"sLKRLQv","exec_duration":600.002},{"job_name":"2026-03-30__13-21-06","trial_name":"collaborative_team_tasks__tUdpyXm","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":true,"latency_sec":785.493,"latency_breakdown":{"env_setup":2.78,"agent_setup":9.322,"agent_exec":600.002,"verifier":168.465},"taskName":"collaborative_team_tasks","jobId":"tUdpyXm","exec_duration":600.002},{"job_name":"2026-03-30__13-34-54","trial_name":"collaborative_team_tasks__CTDuuXk","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":380.136,"latency_breakdown":{"env_setup":2.985,"agent_setup":10.517,"agent_exec":249.197,"verifier":112.932},"taskName":"collaborative_team_tasks","jobId":"CTDuuXk","exec_duration":249.197},{"job_name":"2026-03-30__13-31-50","trial_name":"collaborative_team_tasks__C4FKgAb","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":347.981,"latency_breakdown":{"env_setup":3.798,"agent_setup":11.838,"agent_exec":160.414,"verifier":167.505},"taskName":"collaborative_team_tasks","jobId":"C4FKgAb","exec_duration":160.414},{"job_name":"2026-03-30__13-32-00","trial_name":"collaborative_team_tasks__dhwKQsR","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":300.236,"latency_breakdown":{"env_setup":2.86,"agent_setup":10.588,"agent_exec":126.164,"verifier":156.423},"taskName":"collaborative_team_tasks","jobId":"dhwKQsR","exec_duration":126.164}]},{"taskName":"custom_auth_fields","instruction":"$9","trials":[{"job_name":"2026-03-30__13-19-20","trial_name":"custom_auth_fields__qtgPckJ","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":696.777,"latency_breakdown":{"env_setup":2.791,"agent_setup":9.307,"agent_exec":400.932,"verifier":279.494},"taskName":"custom_auth_fields","jobId":"qtgPckJ","exec_duration":400.932},{"job_name":"2026-03-30__13-17-05","trial_name":"custom_auth_fields__kTTJbeZ","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":true,"latency_sec":661.666,"latency_breakdown":{"env_setup":3.899,"agent_setup":10.559,"agent_exec":600,"verifier":43.063},"taskName":"custom_auth_fields","jobId":"kTTJbeZ","exec_duration":600},{"job_name":"2026-03-30__13-21-06","trial_name":"custom_auth_fields__WvLc3iu","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":785.908,"latency_breakdown":{"env_setup":2.947,"agent_setup":10.686,"agent_exec":345.183,"verifier":422.824},"taskName":"custom_auth_fields","jobId":"WvLc3iu","exec_duration":345.183},{"job_name":"2026-03-30__13-34-54","trial_name":"custom_auth_fields__oSPMgWP","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":344.647,"latency_breakdown":{"env_setup":2.772,"agent_setup":9.326,"agent_exec":288.04,"verifier":40.124},"taskName":"custom_auth_fields","jobId":"oSPMgWP","exec_duration":288.04},{"job_name":"2026-03-30__13-31-50","trial_name":"custom_auth_fields__fMtkS7c","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":365.69,"latency_breakdown":{"env_setup":2.535,"agent_setup":9.058,"agent_exec":301.115,"verifier":48.616},"taskName":"custom_auth_fields","jobId":"fMtkS7c","exec_duration":301.115},{"job_name":"2026-03-30__13-32-00","trial_name":"custom_auth_fields__UXGbXSf","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":421.989,"latency_breakdown":{"env_setup":3.009,"agent_setup":10.766,"agent_exec":352.995,"verifier":50.914},"taskName":"custom_auth_fields","jobId":"UXGbXSf","exec_duration":352.995}]},{"taskName":"todo_app","instruction":"$a","trials":[{"job_name":"2026-03-30__13-19-20","trial_name":"todo_app__jYfHFRz","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":true,"latency_sec":724.8,"latency_breakdown":{"env_setup":3.634,"agent_setup":12.45,"agent_exec":600.002,"verifier":103.346},"taskName":"todo_app","jobId":"jYfHFRz","exec_duration":600.002},{"job_name":"2026-03-30__13-17-05","trial_name":"todo_app__rr2jtop","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":858.051,"latency_breakdown":{"env_setup":3.675,"agent_setup":14.501,"agent_exec":584.025,"verifier":250.69},"taskName":"todo_app","jobId":"rr2jtop","exec_duration":584.025},{"job_name":"2026-03-30__13-21-06","trial_name":"todo_app__u5q2sAU","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":638.906,"latency_breakdown":{"env_setup":3.521,"agent_setup":11.803,"agent_exec":517.077,"verifier":101.424},"taskName":"todo_app","jobId":"u5q2sAU","exec_duration":517.077},{"job_name":"2026-03-30__13-34-54","trial_name":"todo_app__DjWuPJw","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":542.601,"latency_breakdown":{"env_setup":3.807,"agent_setup":13.767,"agent_exec":406.172,"verifier":113.557},"taskName":"todo_app","jobId":"DjWuPJw","exec_duration":406.172},{"job_name":"2026-03-30__13-32-00","trial_name":"todo_app__k6DJeyo","model":"gemini-3-flash","agent":"Pochi","passed":false,"reward":0,"error":false,"latency_sec":501.908,"latency_breakdown":{"env_setup":3.639,"agent_setup":12.266,"agent_exec":207.401,"verifier":272.901},"taskName":"todo_app","jobId":"k6DJeyo","exec_duration":207.401}]}]}]]}],["$Lb","$Lc"],"$Ld"]}],{},null,false,false]},null,false,false]},null,false,false],"$Le",false]],"m":"$undefined","G":["$f",[]],"S":true}
+10:I[75049,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"OutletBoundary"]
+11:"$Sreact.suspense"
+13:I[75049,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"ViewportBoundary"]
+15:I[75049,["/jj-benchmark/pr-preview/pr-1/_next/static/chunks/d2c13bb33c4fcd54.js","/jj-benchmark/pr-preview/pr-1/_next/static/chunks/c21188132e0e0d48.js"],"MetadataBoundary"]
+b:["$","script","script-0",{"src":"/jj-benchmark/pr-preview/pr-1/_next/static/chunks/e92a719b08ce15ef.js","async":true,"nonce":"$undefined"}]
+c:["$","script","script-1",{"src":"/jj-benchmark/pr-preview/pr-1/_next/static/chunks/be08138953094657.js","async":true,"nonce":"$undefined"}]
+d:["$","$L10",null,{"children":["$","$11",null,{"name":"Next.MetadataOutlet","children":"$@12"}]}]
+e:["$","$1","h",{"children":[null,["$","$L13",null,{"children":"$L14"}],["$","div",null,{"hidden":true,"children":["$","$L15",null,{"children":["$","$11",null,{"name":"Next.Metadata","children":"$L16"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+14:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+12:null
+16:[["$","title","0",{"children":"JJ Benchmark"}],["$","meta","1",{"name":"description","content":"Performance results of AI coding models on Jujutsu tasks, measuring success rate and execution time with high precision."}]]
