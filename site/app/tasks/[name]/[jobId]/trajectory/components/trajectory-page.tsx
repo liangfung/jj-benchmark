@@ -71,6 +71,7 @@ export function TrajectoryPage({
     setMounted(true);
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: need to reset iframe loading state when iframeUrl changes
   useEffect(() => {
     if (!mounted) {
       return;
@@ -159,7 +160,7 @@ export function TrajectoryPage({
             className="flex h-full min-h-0 flex-col gap-0 overflow-hidden rounded-xl border border-border bg-background/70 backdrop-blur-sm shadow-sm"
           >
             <div className="border-b border-border bg-background/40 px-3 py-3 sm:px-4">
-              <TabsList className="grid h-11 w-full sm:w-[600px] max-w-full grid-cols-4 items-stretch gap-1 rounded-xl bg-muted/55 p-1">
+              <TabsList className="grid h-11 w-full sm:w-[640px] max-w-full grid-cols-4 items-stretch gap-1 rounded-xl bg-muted/55 p-1">
                 <TabsTrigger
                   value="trajectory"
                   className="h-full w-full cursor-pointer rounded-lg border-0 py-0 leading-none text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-primary/10 hover:text-foreground data-[state=active]:bg-primary/18 data-[state=active]:text-foreground data-[state=active]:shadow-none"

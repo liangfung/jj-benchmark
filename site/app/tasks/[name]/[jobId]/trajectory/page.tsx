@@ -147,7 +147,7 @@ function getGithubOwnerRepo(): string {
 function buildClipUrl(jobName: string, trialName: string, title: string): string {
   const ownerRepo = getGithubOwnerRepo();
   const branch = getGithubBranchName();
-  const url = new URL(`/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/agent/pochi/trajectory.jsonl`, getServerBaseUrl());
+  const url = new URL(`/f/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/agent/pochi/trajectory.jsonl`, getServerBaseUrl());
   url.searchParams.set("title", title);
   return url.toString();
 }
@@ -156,7 +156,7 @@ function buildBrowserVerificationUrl(jobName: string, trialName: string, testCas
   const ownerRepo = getGithubOwnerRepo();
   const branch = getGithubBranchName();
   const url = new URL(
-    `/s/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/${testCase}/trajectory.jsonl`,
+    `/f/raw.githubusercontent.com/${ownerRepo}/refs/heads/${branch}/jobs/${jobName}/${trialName}/verifier/pochi/${testCase}/trajectory.jsonl`,
     getServerBaseUrl(),
   );
   return url.toString();
