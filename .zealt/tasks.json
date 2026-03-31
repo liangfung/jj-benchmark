@@ -1,188 +1,7 @@
 {
-  "todo_app": {
-    "instruction": "# Wasp Todo List Application\n\n## Background\nWasp is a declarative DSL for building full-stack web applications using React, Node.js, and Prisma. In this task, you will build a simple, multi-user Todo List application that demonstrates the core features of Wasp: Entities, Operations (Queries & Actions), and Authentication.\n\n## Requirements\n- **Authentication**: Implement username and password authentication.\n- **Data Model**:\n    - `User` entity to store user information.\n    - `Task` entity with `description` (String) and `isDone` (Boolean) fields.\n    - A one-to-many relationship between `User` and `Task`.\n- **Operations**:\n    - `getTasks` Query: Fetch only the tasks belonging to the logged-in user.\n    - `createTask` Action: Create a new task for the logged-in user.\n    - `updateTask` Action: Toggle the `isDone` status of a specific task.\n- **Frontend**:\n    - A login/signup page using Wasp's built-in Auth UI.\n    - A main page (protected) that displays the user's tasks.\n    - A form to add new tasks.\n    - Checkboxes to mark tasks as completed.\n    - A logout button.\n\n## Implementation Guide\n1. **Initialize Project**:\n   - Create a new Wasp project in `/home/user/todo-app` using the minimal template: `wasp new todo-app -t minimal`.\n2. **Define Schema**:\n   - In `schema.prisma`, define the `User` and `Task` models with the appropriate relation.\n3. **Configure App**:\n   - In `main.wasp`, set up the `app` declaration with `auth` (using `usernameAndPassword`).\n   - Define `route` and `page` for `MainPage`, `LoginPage`, and `SignupPage`.\n   - Set `authRequired: true` for the `MainPage`.\n4. **Implement Operations**:\n   - Declare `query getTasks`, `action createTask`, and `action updateTask` in `main.wasp`.\n   - Implement the logic in `src/queries.ts` and `src/actions.ts`, ensuring you use `context.user` for security.\n5. **Build UI**:\n   - Use Wasp's `LoginForm` and `SignupForm` for authentication pages.\n   - Use `useQuery` and `useAction` hooks in `src/MainPage.tsx` to interact with the backend.\n6. **Database Migration**:\n   - Run `wasp db migrate-dev` to apply your schema changes.\n\n## Constraints\n- **Project Path**: `/home/user/todo-app`\n- **Start Command**: `wasp start`\n- **Port**: 3000\n- **Database**: SQLite (default)\n",
-    "trials": [
-      {
-        "job_name": "2026-03-30__13-17-05",
-        "trial_name": "todo_app__rr2jtop",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 858.051,
-        "latency_breakdown": {
-          "env_setup": 3.675,
-          "agent_setup": 14.501,
-          "agent_exec": 584.025,
-          "verifier": 250.69
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-19-20",
-        "trial_name": "todo_app__jYfHFRz",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": true,
-        "latency_sec": 724.8,
-        "latency_breakdown": {
-          "env_setup": 3.634,
-          "agent_setup": 12.45,
-          "agent_exec": 600.002,
-          "verifier": 103.346
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-34-54",
-        "trial_name": "todo_app__DjWuPJw",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 542.601,
-        "latency_breakdown": {
-          "env_setup": 3.807,
-          "agent_setup": 13.767,
-          "agent_exec": 406.172,
-          "verifier": 113.557
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-21-06",
-        "trial_name": "todo_app__u5q2sAU",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 638.906,
-        "latency_breakdown": {
-          "env_setup": 3.521,
-          "agent_setup": 11.803,
-          "agent_exec": 517.077,
-          "verifier": 101.424
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-32-00",
-        "trial_name": "todo_app__k6DJeyo",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 501.908,
-        "latency_breakdown": {
-          "env_setup": 3.639,
-          "agent_setup": 12.266,
-          "agent_exec": 207.401,
-          "verifier": 272.901
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      }
-    ]
-  },
   "collaborative_team_tasks": {
     "instruction": "# Collaborative Task Manager with Role-Based Access\n\n## Background\nWasp is a full-stack framework that uses a declarative DSL to define application structure, combined with React and Node.js. This task involves building a multi-user task management system where users can belong to teams, and access is controlled based on membership.\n\n## Requirements\n1.  **Data Model**:\n    *   `User`: Standard auth user.\n    *   `Team`: Has a `name` and a list of `members` (Users).\n    *   `Task`: Has a `description`, `isDone` status, and belongs to a `Team`.\n2.  **Authentication**:\n    *   Use `usernameAndPassword` authentication.\n    *   Customize the signup process to include a `fullName` field on the `User` entity.\n3.  **Operations**:\n    *   **Query** `getMyTeams`: Returns all teams the logged-in user belongs to.\n    *   **Action** `createTeam`: Creates a new team and adds the creator as the first member.\n    *   **Action** `createTask`: Creates a task for a specific team. **Constraint**: Only team members can create tasks for that team.\n    *   **Query** `getTeamTasks`: Returns all tasks for a specific team. **Constraint**: Only team members can view tasks for that team.\n4.  **Frontend**:\n    *   A Dashboard page showing the user's teams.\n    *   A Team Detail page (using dynamic routes `/team/:id`) showing tasks and a form to add new tasks.\n    *   Use Wasp's `useQuery` and `useAction` hooks for data fetching and mutations.\n\n## Implementation Guide\n1.  **Project Setup**:\n    *   Initialize a new Wasp project: `wasp new team_manager -t minimal`.\n    *   Base path: `/home/user/team_manager`.\n2.  **Schema Definition**:\n    *   Define `User`, `Team`, and `Task` in `schema.prisma`.\n    *   Ensure proper relations (Many-to-Many between User and Team, One-to-Many between Team and Task).\n3.  **Auth Configuration**:\n    *   In `main.wasp`, configure `auth` with `userSignupFields` to capture `fullName`.\n    *   Implement `userSignupFields` in `src/auth.ts`.\n4.  **Backend Logic**:\n    *   Implement queries and actions in `src/queries.ts` and `src/actions.ts`.\n    *   Use `context.user` to verify identity and `context.entities` for database access.\n    *   Throw `HttpError(403)` if a user tries to access/modify a team they don't belong to.\n5.  **Frontend Implementation**:\n    *   Create `src/pages/Dashboard.tsx` and `src/pages/TeamPage.tsx`.\n    *   Use `wasp/client/operations` to call your queries and actions.\n\n## Constraints\n- Project path: `/home/user/team_manager`\n- Start command: `wasp start`\n- Port: 3000\n- Database: SQLite (default)\n- Use TypeScript for all implementation files.\n",
     "trials": [
-      {
-        "job_name": "2026-03-30__13-17-05",
-        "trial_name": "collaborative_team_tasks__sLKRLQv",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": true,
-        "latency_sec": 779.237,
-        "latency_breakdown": {
-          "env_setup": 2.534,
-          "agent_setup": 9.306,
-          "agent_exec": 600.002,
-          "verifier": 156.365
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-19-20",
-        "trial_name": "collaborative_team_tasks__NJ5agBo",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 572.162,
-        "latency_breakdown": {
-          "env_setup": 2.844,
-          "agent_setup": 9.304,
-          "agent_exec": 386.956,
-          "verifier": 168.599
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-34-54",
-        "trial_name": "collaborative_team_tasks__CTDuuXk",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 380.136,
-        "latency_breakdown": {
-          "env_setup": 2.985,
-          "agent_setup": 10.517,
-          "agent_exec": 249.197,
-          "verifier": 112.932
-        },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
-      },
       {
         "job_name": "2026-03-30__13-31-50",
         "trial_name": "collaborative_team_tasks__C4FKgAb",
@@ -203,29 +22,8 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-21-06",
-        "trial_name": "collaborative_team_tasks__tUdpyXm",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": true,
-        "latency_sec": 785.493,
-        "latency_breakdown": {
-          "env_setup": 2.78,
-          "agent_setup": 9.322,
-          "agent_exec": 600.002,
-          "verifier": 168.465
         },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-32-00",
@@ -247,79 +45,108 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
-      }
-    ]
-  },
-  "custom_auth_fields": {
-    "instruction": "# Customizing Wasp Signup with Extra Fields\n\n## Background\nWasp provides a powerful authentication system out of the box. While the default setup handles email/password or social logins, many real-world applications require collecting additional information during registration, such as a user's full name or organization. This task involves extending the Wasp `User` entity and the built-in `SignupForm` to collect and save a `fullName` field.\n\n## Requirements\n- **Database Schema**: Update the `User` entity to include a `fullName` string field.\n- **Backend Logic**: Implement a `userSignupFields` function to process and validate the `fullName` from the signup data.\n- **Frontend UI**: Customize the `SignupForm` component to include a \"Full Name\" input field with basic validation.\n- **Display**: Show the `fullName` of the logged-in user on the main page.\n\n## Implementation Guide\n\n### 1. Project Setup\nInitialize a new Wasp project in `/home/user/my-auth-app`:\n```bash\nwasp new my-auth-app\ncd my-auth-app\n```\n\n### 2. Update Schema (`main.wasp`)\nModify the `User` entity to add `fullName`: \n```wasp\nentity User {\n  id       Int     @id @default(autoincrement())\n  username String  @unique\n  password String\n  fullName String  // Add this field\n}\n```\n\n### 3. Configure Auth (`main.wasp`)\nIn the `auth` section of your `app` declaration, add the `userSignupFields` import:\n```wasp\napp myAuthApp {\n  wasp: { version: \"^0.15.0\" },\n  title: \"My Auth App\",\n  auth: {\n    userEntity: User,\n    methods: { usernameAndPassword: {} },\n    onAuthFailedRedirectTo: \"/login\",\n    userSignupFields: import { userSignupFields } from \"@src/auth/signup.js\"\n  }\n}\n```\n\n### 4. Backend Logic (`src/auth/signup.js`)\nCreate `src/auth/signup.js` and export `userSignupFields`. Use `defineUserSignupFields` to map the incoming data to your entity fields:\n```javascript\nimport { defineUserSignupFields } from 'wasp/server/auth'\n\nexport const userSignupFields = defineUserSignupFields({\n  fullName: (data) => {\n    if (!data.fullName) {\n      throw new Error('Full name is required')\n    }\n    return data.fullName\n  },\n})\n```\n\n### 5. Frontend UI (`src/SignupPage.jsx`)\nCustomize the `SignupForm` by passing the `additionalFields` prop:\n```javascript\nimport { SignupForm } from 'wasp/client/auth'\n\nexport const SignupPage = () => {\n  return (\n    <SignupForm\n      additionalFields={[\n        {\n          name: 'fullName',\n          label: 'Full Name',\n          type: 'input',\n          validations: {\n            required: 'Full name is required',\n          },\n        },\n      ]}\n    />\n  )\n}\n```\nRemember to update `main.wasp` to use this custom `SignupPage` component for the `/signup` route.\n\n### 6. Display User Info (`src/MainPage.jsx`)\nUpdate the `MainPage` to display the user's full name:\n```javascript\nexport const MainPage = ({ user }) => {\n  return (\n    <div>\n      <h1>Hello, {user.fullName}!</h1>\n      {/* ... logout button ... */}\n    </div>\n  )\n}\n```\n\n## Constraints\n- Project path: `/home/user/my-auth-app`\n- Start command: `wasp start` (Note: You'll need to run `wasp db migrate-dev` first)\n- Port: 3000",
-    "trials": [
+        },
+        "browser_verification_cases": []
+      },
       {
-        "job_name": "2026-03-30__13-17-05",
-        "trial_name": "custom_auth_fields__kTTJbeZ",
+        "job_name": "2026-03-30__13-34-54",
+        "trial_name": "collaborative_team_tasks__CTDuuXk",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 380.136,
+        "latency_breakdown": {
+          "env_setup": 2.985,
+          "agent_setup": 10.517,
+          "agent_exec": 249.197,
+          "verifier": 112.932
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_workflow"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-21-06",
+        "trial_name": "collaborative_team_tasks__tUdpyXm",
         "agent": "pochi",
         "model": "google/gemini-3-flash",
         "provider": "google",
         "passed": false,
         "reward": 0,
         "error": true,
-        "latency_sec": 661.666,
+        "latency_sec": 785.493,
         "latency_breakdown": {
-          "env_setup": 3.899,
-          "agent_setup": 10.559,
-          "agent_exec": 600,
-          "verifier": 43.063
+          "env_setup": 2.78,
+          "agent_setup": 9.322,
+          "agent_exec": 600.002,
+          "verifier": 168.465
         },
         "tokens": {
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
         "job_name": "2026-03-30__13-19-20",
-        "trial_name": "custom_auth_fields__qtgPckJ",
+        "trial_name": "collaborative_team_tasks__NJ5agBo",
         "agent": "pochi",
         "model": "google/gemini-3-flash",
         "provider": "google",
         "passed": false,
         "reward": 0,
         "error": false,
-        "latency_sec": 696.777,
+        "latency_sec": 572.162,
         "latency_breakdown": {
-          "env_setup": 2.791,
-          "agent_setup": 9.307,
-          "agent_exec": 400.932,
-          "verifier": 279.494
+          "env_setup": 2.844,
+          "agent_setup": 9.304,
+          "agent_exec": 386.956,
+          "verifier": 168.599
         },
         "tokens": {
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": []
       },
       {
-        "job_name": "2026-03-30__13-34-54",
-        "trial_name": "custom_auth_fields__oSPMgWP",
+        "job_name": "2026-03-30__13-17-05",
+        "trial_name": "collaborative_team_tasks__sLKRLQv",
         "agent": "pochi",
         "model": "google/gemini-3-flash",
         "provider": "google",
         "passed": false,
         "reward": 0,
-        "error": false,
-        "latency_sec": 344.647,
+        "error": true,
+        "latency_sec": 779.237,
         "latency_breakdown": {
-          "env_setup": 2.772,
-          "agent_setup": 9.326,
-          "agent_exec": 288.04,
-          "verifier": 40.124
+          "env_setup": 2.534,
+          "agent_setup": 9.306,
+          "agent_exec": 600.002,
+          "verifier": 156.365
         },
         "tokens": {
           "input": 0,
           "output": 0,
           "cache": 0
-        }
-      },
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "custom_auth_fields": {
+    "instruction": "# Customizing Wasp Signup with Extra Fields\n\n## Background\nWasp provides a powerful authentication system out of the box. While the default setup handles email/password or social logins, many real-world applications require collecting additional information during registration, such as a user's full name or organization. This task involves extending the Wasp `User` entity and the built-in `SignupForm` to collect and save a `fullName` field.\n\n## Requirements\n- **Database Schema**: Update the `User` entity to include a `fullName` string field.\n- **Backend Logic**: Implement a `userSignupFields` function to process and validate the `fullName` from the signup data.\n- **Frontend UI**: Customize the `SignupForm` component to include a \"Full Name\" input field with basic validation.\n- **Display**: Show the `fullName` of the logged-in user on the main page.\n\n## Implementation Guide\n\n### 1. Project Setup\nInitialize a new Wasp project in `/home/user/my-auth-app`:\n```bash\nwasp new my-auth-app\ncd my-auth-app\n```\n\n### 2. Update Schema (`main.wasp`)\nModify the `User` entity to add `fullName`: \n```wasp\nentity User {\n  id       Int     @id @default(autoincrement())\n  username String  @unique\n  password String\n  fullName String  // Add this field\n}\n```\n\n### 3. Configure Auth (`main.wasp`)\nIn the `auth` section of your `app` declaration, add the `userSignupFields` import:\n```wasp\napp myAuthApp {\n  wasp: { version: \"^0.15.0\" },\n  title: \"My Auth App\",\n  auth: {\n    userEntity: User,\n    methods: { usernameAndPassword: {} },\n    onAuthFailedRedirectTo: \"/login\",\n    userSignupFields: import { userSignupFields } from \"@src/auth/signup.js\"\n  }\n}\n```\n\n### 4. Backend Logic (`src/auth/signup.js`)\nCreate `src/auth/signup.js` and export `userSignupFields`. Use `defineUserSignupFields` to map the incoming data to your entity fields:\n```javascript\nimport { defineUserSignupFields } from 'wasp/server/auth'\n\nexport const userSignupFields = defineUserSignupFields({\n  fullName: (data) => {\n    if (!data.fullName) {\n      throw new Error('Full name is required')\n    }\n    return data.fullName\n  },\n})\n```\n\n### 5. Frontend UI (`src/SignupPage.jsx`)\nCustomize the `SignupForm` by passing the `additionalFields` prop:\n```javascript\nimport { SignupForm } from 'wasp/client/auth'\n\nexport const SignupPage = () => {\n  return (\n    <SignupForm\n      additionalFields={[\n        {\n          name: 'fullName',\n          label: 'Full Name',\n          type: 'input',\n          validations: {\n            required: 'Full name is required',\n          },\n        },\n      ]}\n    />\n  )\n}\n```\nRemember to update `main.wasp` to use this custom `SignupPage` component for the `/signup` route.\n\n### 6. Display User Info (`src/MainPage.jsx`)\nUpdate the `MainPage` to display the user's full name:\n```javascript\nexport const MainPage = ({ user }) => {\n  return (\n    <div>\n      <h1>Hello, {user.fullName}!</h1>\n      {/* ... logout button ... */}\n    </div>\n  )\n}\n```\n\n## Constraints\n- Project path: `/home/user/my-auth-app`\n- Start command: `wasp start` (Note: You'll need to run `wasp db migrate-dev` first)\n- Port: 3000",
+    "trials": [
       {
         "job_name": "2026-03-30__13-31-50",
         "trial_name": "custom_auth_fields__fMtkS7c",
@@ -340,29 +167,10 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
-      },
-      {
-        "job_name": "2026-03-30__13-21-06",
-        "trial_name": "custom_auth_fields__WvLc3iu",
-        "agent": "pochi",
-        "model": "google/gemini-3-flash",
-        "provider": "google",
-        "passed": false,
-        "reward": 0,
-        "error": false,
-        "latency_sec": 785.908,
-        "latency_breakdown": {
-          "env_setup": 2.947,
-          "agent_setup": 10.686,
-          "agent_exec": 345.183,
-          "verifier": 422.824
         },
-        "tokens": {
-          "input": 0,
-          "output": 0,
-          "cache": 0
-        }
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
       },
       {
         "job_name": "2026-03-30__13-32-00",
@@ -384,7 +192,238 @@
           "input": 0,
           "output": 0,
           "cache": 0
-        }
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-34-54",
+        "trial_name": "custom_auth_fields__oSPMgWP",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 344.647,
+        "latency_breakdown": {
+          "env_setup": 2.772,
+          "agent_setup": 9.326,
+          "agent_exec": 288.04,
+          "verifier": 40.124
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-21-06",
+        "trial_name": "custom_auth_fields__WvLc3iu",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 785.908,
+        "latency_breakdown": {
+          "env_setup": 2.947,
+          "agent_setup": 10.686,
+          "agent_exec": 345.183,
+          "verifier": 422.824
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-19-20",
+        "trial_name": "custom_auth_fields__qtgPckJ",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 696.777,
+        "latency_breakdown": {
+          "env_setup": 2.791,
+          "agent_setup": 9.307,
+          "agent_exec": 400.932,
+          "verifier": 279.494
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "custom_auth_fields"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-17-05",
+        "trial_name": "custom_auth_fields__kTTJbeZ",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": true,
+        "latency_sec": 661.666,
+        "latency_breakdown": {
+          "env_setup": 3.899,
+          "agent_setup": 10.559,
+          "agent_exec": 600,
+          "verifier": 43.063
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": []
+      }
+    ]
+  },
+  "todo_app": {
+    "instruction": "# Wasp Todo List Application\n\n## Background\nWasp is a declarative DSL for building full-stack web applications using React, Node.js, and Prisma. In this task, you will build a simple, multi-user Todo List application that demonstrates the core features of Wasp: Entities, Operations (Queries & Actions), and Authentication.\n\n## Requirements\n- **Authentication**: Implement username and password authentication.\n- **Data Model**:\n    - `User` entity to store user information.\n    - `Task` entity with `description` (String) and `isDone` (Boolean) fields.\n    - A one-to-many relationship between `User` and `Task`.\n- **Operations**:\n    - `getTasks` Query: Fetch only the tasks belonging to the logged-in user.\n    - `createTask` Action: Create a new task for the logged-in user.\n    - `updateTask` Action: Toggle the `isDone` status of a specific task.\n- **Frontend**:\n    - A login/signup page using Wasp's built-in Auth UI.\n    - A main page (protected) that displays the user's tasks.\n    - A form to add new tasks.\n    - Checkboxes to mark tasks as completed.\n    - A logout button.\n\n## Implementation Guide\n1. **Initialize Project**:\n   - Create a new Wasp project in `/home/user/todo-app` using the minimal template: `wasp new todo-app -t minimal`.\n2. **Define Schema**:\n   - In `schema.prisma`, define the `User` and `Task` models with the appropriate relation.\n3. **Configure App**:\n   - In `main.wasp`, set up the `app` declaration with `auth` (using `usernameAndPassword`).\n   - Define `route` and `page` for `MainPage`, `LoginPage`, and `SignupPage`.\n   - Set `authRequired: true` for the `MainPage`.\n4. **Implement Operations**:\n   - Declare `query getTasks`, `action createTask`, and `action updateTask` in `main.wasp`.\n   - Implement the logic in `src/queries.ts` and `src/actions.ts`, ensuring you use `context.user` for security.\n5. **Build UI**:\n   - Use Wasp's `LoginForm` and `SignupForm` for authentication pages.\n   - Use `useQuery` and `useAction` hooks in `src/MainPage.tsx` to interact with the backend.\n6. **Database Migration**:\n   - Run `wasp db migrate-dev` to apply your schema changes.\n\n## Constraints\n- **Project Path**: `/home/user/todo-app`\n- **Start Command**: `wasp start`\n- **Port**: 3000\n- **Database**: SQLite (default)\n",
+    "trials": [
+      {
+        "job_name": "2026-03-30__13-32-00",
+        "trial_name": "todo_app__k6DJeyo",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 501.908,
+        "latency_breakdown": {
+          "env_setup": 3.639,
+          "agent_setup": 12.266,
+          "agent_exec": 207.401,
+          "verifier": 272.901
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-34-54",
+        "trial_name": "todo_app__DjWuPJw",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 542.601,
+        "latency_breakdown": {
+          "env_setup": 3.807,
+          "agent_setup": 13.767,
+          "agent_exec": 406.172,
+          "verifier": 113.557
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-21-06",
+        "trial_name": "todo_app__u5q2sAU",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 638.906,
+        "latency_breakdown": {
+          "env_setup": 3.521,
+          "agent_setup": 11.803,
+          "agent_exec": 517.077,
+          "verifier": 101.424
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-19-20",
+        "trial_name": "todo_app__jYfHFRz",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": true,
+        "latency_sec": 724.8,
+        "latency_breakdown": {
+          "env_setup": 3.634,
+          "agent_setup": 12.45,
+          "agent_exec": 600.002,
+          "verifier": 103.346
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
+      },
+      {
+        "job_name": "2026-03-30__13-17-05",
+        "trial_name": "todo_app__rr2jtop",
+        "agent": "pochi",
+        "model": "google/gemini-3-flash",
+        "provider": "google",
+        "passed": false,
+        "reward": 0,
+        "error": false,
+        "latency_sec": 858.051,
+        "latency_breakdown": {
+          "env_setup": 3.675,
+          "agent_setup": 14.501,
+          "agent_exec": 584.025,
+          "verifier": 250.69
+        },
+        "tokens": {
+          "input": 0,
+          "output": 0,
+          "cache": 0
+        },
+        "browser_verification_cases": [
+          "test_browser_verification"
+        ]
       }
     ]
   }
